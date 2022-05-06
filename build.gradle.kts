@@ -5,6 +5,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	kotlin("jvm") version "1.6.21"
 	kotlin("plugin.spring") version "1.6.21"
+	kotlin("plugin.jpa") version "1.6.21"
 }
 
 group = "com.mal"
@@ -22,9 +23,8 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-	implementation("org.hibernate:hibernate-core:6.0.1.Final")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	runtimeOnly ("com.h2database:h2")
+	implementation ("com.h2database:h2")
 }
 
 tasks.withType<KotlinCompile> {
