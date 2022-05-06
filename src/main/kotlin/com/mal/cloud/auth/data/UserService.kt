@@ -1,8 +1,8 @@
-package com.mal.cloud.data
+package com.mal.cloud.auth.data
 
-import com.mal.cloud.data.repository.UserDbRepository
-import com.mal.cloud.data.table.User
-import com.mal.cloud.domain.repository.AuthRepository
+import com.mal.cloud.auth.data.repository.UserDbRepository
+import com.mal.cloud.auth.data.table.User
+import com.mal.cloud.auth.domain.repository.AuthRepository
 import org.springframework.stereotype.Service
 
 @Service

@@ -1,7 +1,7 @@
-package com.mal.cloud.presentatin
+package com.mal.cloud.auth.presentatin
 
-import com.mal.cloud.data.table.User
-import com.mal.cloud.domain.useCase.AuthUseCase
+import com.mal.cloud.auth.data.table.User
+import com.mal.cloud.auth.domain.useCase.AuthUseCase
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController

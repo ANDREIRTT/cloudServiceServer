@@ -1,7 +1,7 @@
-package com.mal.cloud.domain.useCase
+package com.mal.cloud.auth.domain.useCase
 
-import com.mal.cloud.data.UserService
-import com.mal.cloud.data.table.User
+import com.mal.cloud.auth.data.UserService
+import com.mal.cloud.auth.data.table.User
 import org.springframework.stereotype.Component
 
 @Component
