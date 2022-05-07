@@ -13,7 +13,7 @@ import javax.persistence.Table
 data class User(
     private val username: String,
     private val password: String,
-    val userRole: UserRole = UserRole.USER,
+    val userRole: UserRole = UserRole.ROLE_USER,
     @Id
     @GeneratedValue
     val userId: Long? = null,
