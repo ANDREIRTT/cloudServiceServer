@@ -1,14 +1,17 @@
 package com.mal.cloud.auth.presentation
 
-import com.mal.cloud.auth.domain.entity.UserEntity
 import com.mal.cloud.auth.data.table.UserRole
 import com.mal.cloud.auth.domain.dto.AuthData
-import com.mal.cloud.auth.domain.dto.UserInfo
 import com.mal.cloud.auth.domain.useCase.AuthUseCase
-import org.springframework.web.bind.annotation.*
+import com.mal.cloud.auth.presentation.exceptionHandler.AuthExceptionHandler
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/account")
+@AuthExceptionHandler
 class AuthController(
     private val authUseCase: AuthUseCase
 ) {
@@ -27,10 +30,5 @@ class AuthController(
         @RequestParam password: String
     ): AuthData {
         return authUseCase.login(username, password)
-    }
-
-    @RequestMapping(path = ["/info"], method = [RequestMethod.POST])
-    fun info(): UserInfo {
-        return authUseCase.userInfo()
     }
 }

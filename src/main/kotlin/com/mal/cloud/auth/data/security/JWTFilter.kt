@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse
 
 private const val BEARER = "Bearer "
 
+private const val HEADER = "Authorization"
+
 @Component
 class JWTFilter(
     private val jwtUtil: JWTUtil,
@@ -22,7 +24,7 @@ class JWTFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val authHeader = request.getHeader("Authorization")
+        val authHeader = request.getHeader(HEADER)
 
         if (authHeader != null && authHeader.isNotBlank() && authHeader.startsWith(BEARER)) {
             val jwt = authHeader.substring(BEARER.length)

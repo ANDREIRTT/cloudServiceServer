@@ -7,6 +7,4 @@ interface AuthRepository {
     fun login(username: String, password: String): UserEntity
 
     fun register(username: String, password: String, userRole: UserRole): UserEntity
-
-    fun getUserInfo(): UserEntity
 }

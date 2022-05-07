@@ -18,8 +18,4 @@ class AuthUseCase(
     fun login(username: String, password: String): AuthData {
         return userService.login(username, password).toAuthData()
     }
-
-    fun userInfo(): UserInfo {
-        return userService.getUserInfo().toUserInfo()
-    }
 }
