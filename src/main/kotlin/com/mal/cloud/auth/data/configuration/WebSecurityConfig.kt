@@ -26,8 +26,8 @@ class WebSecurityConfig(
         http
             .httpBasic().and()
             .authorizeRequests()
-            .antMatchers("/account/login", "/account/create", "/account/list").permitAll()
-            .antMatchers("/account/register", "/h2-console").hasRole(UserRole.ROLE_ADMIN.name)
+            .antMatchers("/account/login", "/account/create", "/account/list", "/account/register").permitAll()
+            .antMatchers("/h2-console").hasRole(UserRole.ROLE_ADMIN.name)
             .anyRequest().authenticated()
             .and().sessionManagement().disable()
             .csrf().disable()
