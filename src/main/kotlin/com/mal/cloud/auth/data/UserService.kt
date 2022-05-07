@@ -1,41 +1,46 @@
 package com.mal.cloud.auth.data
 
-import com.mal.cloud.auth.data.entity.UserEntity
+import com.mal.cloud.auth.data.dbRepository.UserDbRepository
 import com.mal.cloud.auth.data.exceptions.UserAlreadyExistException
-import com.mal.cloud.auth.data.exceptions.UserInvalidPasswordException
-import com.mal.cloud.auth.data.repository.UserDbRepository
-import com.mal.cloud.auth.data.table.User
+import com.mal.cloud.auth.data.exceptions.UserNotExistException
+import com.mal.cloud.auth.data.security.JWTUtil
 import com.mal.cloud.auth.data.table.UserRole
+import com.mal.cloud.auth.data.table.Usr
+import com.mal.cloud.auth.domain.entity.UserEntity
 import com.mal.cloud.auth.domain.repository.AuthRepository
-import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class UserService(
     private val userDbRepository: UserDbRepository,
-    private val userBeanService: UserBeanService
-) : AuthRepository, UserDetailsService {
+    private val authenticationManager: AuthenticationManager,
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtUtil: JWTUtil
+) : AuthRepository {
 
     override fun login(username: String, password: String): UserEntity {
-        val userDetails = loadUserByUsername(username)
+        val userTable = userDbRepository.findUserByUsername(username) ?: throw UserNotExistException()
 
-        if (userDetails.password == userBeanService.getPasswordEncoder().encode(password)) {
-            return UserEntity(userDetails)
-        } else {
-            throw UserInvalidPasswordException("password not valid")
-        }
+        val authInputToken = UsernamePasswordAuthenticationToken(username, password)
+
+        authenticationManager.authenticate(authInputToken)
+        return UserEntity(jwtUtil.generateToken(username), userTable)
     }
 
     override fun register(username: String, password: String, userRole: UserRole): UserEntity {
         val userDetails = userDbRepository.findUserByUsername(username)
+
         if (userDetails == null) {
             return UserEntity(
+                jwtUtil.generateToken(username),
                 userDbRepository.save(
-                    User(
+                    Usr(
                         username,
-                        userBeanService.getPasswordEncoder().encode(password),
+                        passwordEncoder.encode(password),
                         userRole
                     )
                 )
@@ -45,27 +50,11 @@ class UserService(
         }
     }
 
-    override fun getAllUsers(): List<UserEntity> {
-        return userDbRepository.findAll().toList().map {
-            UserEntity(it)
-        }
-    }
-
-//    override fun login(username: String, password: String) {
-//        var userDetails = loadUserByUsername(username)
-//
-//    }
-//
-//    override fun register(username: String, password: String, userRole: UserRole) {
-//        userDbRepository.save(User(username, password, userRole))
-//    }
-//
-//    override fun getAllUsers(): List<User> {
-//        return userDbRepository.findAll().toList()
-//    }
-
-    override fun loadUserByUsername(username: String): UserDetails {
-        return userDbRepository.findUserByUsername(username)
-            ?: throw UsernameNotFoundException("user not found")
+    override fun getUserInfo(): UserEntity {
+        val username = SecurityContextHolder.getContext().authentication.principal as String
+        return UserEntity(
+            null,
+            userDbRepository.findUserByUsername(username)!!
+        )
     }
 }

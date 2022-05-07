@@ -1,5 +1,6 @@
 package com.mal.cloud.auth.data.table
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -10,8 +11,9 @@ import javax.persistence.Table
 
 @Entity
 @Table
-data class User(
+data class Usr(
     private val username: String,
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private val password: String,
     val userRole: UserRole = UserRole.ROLE_USER,
     @Id

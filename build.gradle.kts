@@ -27,6 +27,7 @@ dependencies {
 	implementation ("com.h2database:h2")
 
 	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("com.auth0:java-jwt:3.19.0")
 }
 
 tasks.withType<KotlinCompile> {

@@ -1,6 +1,6 @@
-package com.mal.cloud.auth.presentatin
+package com.mal.cloud.auth.presentation
 
-import com.mal.cloud.auth.data.entity.UserEntity
+import com.mal.cloud.auth.domain.entity.UserEntity
 import com.mal.cloud.auth.data.table.UserRole
 import com.mal.cloud.auth.domain.useCase.AuthUseCase
 import org.springframework.web.bind.annotation.*
@@ -15,13 +15,7 @@ class AuthController(
         @RequestParam username: String,
         @RequestParam password: String
     ): UserEntity {
-//        authUseCase.register(username, password, UserRole.ROLE_USER)
         return authUseCase.register(username, password, UserRole.ROLE_USER)
-    }
-
-    @GetMapping("/list")
-    fun getAll(): List<UserEntity> {
-        return authUseCase.getAllUsers()
     }
 
     @RequestMapping(path = ["/login"], consumes = ["multipart/form-data"], method = [RequestMethod.POST])
