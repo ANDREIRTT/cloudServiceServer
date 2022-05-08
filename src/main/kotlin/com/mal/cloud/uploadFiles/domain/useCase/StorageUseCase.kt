@@ -18,7 +18,7 @@ class StorageUseCase(
 ) {
     fun storeFile(file: MultipartFile): ResponseEntity<Any> {
         return try {
-            ResponseEntity.ok().body(storageService.storeFile(file))
+            ResponseEntity.ok().body(storageService.storeFile(file).toStoregeFile())
         } catch (e: StorageException) {
             val status = HttpStatus.CONFLICT
             ResponseEntity<Any>(
