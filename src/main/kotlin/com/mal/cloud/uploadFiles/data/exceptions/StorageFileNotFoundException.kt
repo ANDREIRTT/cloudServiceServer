@@ -1,7 +1,6 @@
 package com.mal.cloud.uploadFiles.data.exceptions
 
-
-class StorageException(
+class StorageFileNotFoundException(
     message: String? = null,
     cause: Throwable? = null
 ) : RuntimeException(message, cause)

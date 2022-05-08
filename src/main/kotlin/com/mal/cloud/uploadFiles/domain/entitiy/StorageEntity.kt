@@ -6,5 +6,4 @@ import org.springframework.http.MediaType
 data class StorageEntity(
     val resource: Resource,
     val mediaType: MediaType
-) {
-}
+)

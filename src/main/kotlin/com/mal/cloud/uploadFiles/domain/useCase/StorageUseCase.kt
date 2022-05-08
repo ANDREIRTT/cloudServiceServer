@@ -15,12 +15,12 @@ class StorageUseCase(
     }
 
     fun loadFile(userId: Long, fileName: String): ResponseEntity<Resource> {
-        val resource = storageService.loadFile(userId, fileName)
+        val storageEntity = storageService.loadFile(userId, fileName)
 
         return ResponseEntity.ok()
-            .header("content-disposition", "inline; filename=\"" + resource.resource.filename + "\"")
-            .contentLength(resource.resource.contentLength())
-            .contentType(resource.mediaType)
-            .body(resource.resource);
+            .header("content-disposition", "inline; filename=\"" + storageEntity.resource.filename + "\"")
+            .contentLength(storageEntity.resource.contentLength())
+            .contentType(storageEntity.mediaType)
+            .body(storageEntity.resource)
     }
 }

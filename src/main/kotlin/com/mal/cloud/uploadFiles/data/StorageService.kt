@@ -5,6 +5,7 @@ import com.mal.cloud.auth.data.table.Usr
 import com.mal.cloud.uploadFiles.data.component.MediaTypeComponent
 import com.mal.cloud.uploadFiles.data.configuration.LocationData
 import com.mal.cloud.uploadFiles.data.exceptions.StorageException
+import com.mal.cloud.uploadFiles.data.exceptions.StorageFileNotFoundException
 import com.mal.cloud.uploadFiles.domain.entitiy.StorageEntity
 import com.mal.cloud.uploadFiles.domain.repository.StorageRepository
 import org.springframework.core.io.ByteArrayResource
@@ -70,21 +71,18 @@ class StorageService(
         return try {
             val path: Path = path.resolve("${user?.userId}/$filename").normalize()
             val resource: Resource = UrlResource(path.toUri())
-//            val resource: Resource = ByteArrayResource(Files.readAllBytes(path))
             if (resource.exists() || resource.isReadable) {
                 StorageEntity(
                     resource,
                     mediaTypeComponent.getMediaTypeForFileName(filename)
                 )
             } else {
-                throw Exception()
-//                throw StorageFileNotFoundException(
-//                    "Could not read file: $filename"
-//                )
+                throw StorageFileNotFoundException(
+                    "Could not read file: $filename"
+                )
             }
         } catch (e: MalformedURLException) {
-            throw Exception()
-//            throw StorageFileNotFoundException("Could not read file: $filename", e)
+            throw StorageFileNotFoundException("Could not read file: $filename", e)
         }
     }
 }
