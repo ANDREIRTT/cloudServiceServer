@@ -18,13 +18,12 @@ class StorageController(
 ) {
 
     @PostMapping("/upload")
-    fun uploadFile(@RequestParam("file") multipartFile: MultipartFile): Boolean {
-        storageUseCase.storeFile(multipartFile)
-        return true
+    fun uploadFile(@RequestParam("file") multipartFile: MultipartFile): ResponseEntity<Any> {
+        return storageUseCase.storeFile(multipartFile)
     }
 
-    @GetMapping("/files/{userId}/{fileName}")
-    fun loadFile(@PathVariable userId: Long, @PathVariable fileName: String): ResponseEntity<Resource> {
-        return storageUseCase.loadFile(userId, fileName)
+    @GetMapping("/files/{fileName}")
+    fun loadFile(@PathVariable fileName: String): ResponseEntity<Any> {
+        return storageUseCase.loadFile(fileName)
     }
 }

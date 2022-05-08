@@ -1,18 +1,21 @@
 package com.mal.cloud.uploadFiles.data
 
-import com.mal.cloud.auth.data.dbRepository.UserDbRepository
-import com.mal.cloud.auth.data.table.Usr
-import com.mal.cloud.uploadFiles.data.component.MediaTypeComponent
+import com.mal.cloud.auth.data.component.AuthenticatedUserComponent
+import com.mal.cloud.uploadFiles.data.component.DetermineFileType
 import com.mal.cloud.uploadFiles.data.configuration.LocationData
+import com.mal.cloud.uploadFiles.data.database.dbRepository.FileInfoRepository
+import com.mal.cloud.uploadFiles.data.database.table.FileInfo
+import com.mal.cloud.uploadFiles.data.exceptions.AccessFileDeniedException
+import com.mal.cloud.uploadFiles.data.exceptions.FileExistentException
 import com.mal.cloud.uploadFiles.data.exceptions.StorageException
 import com.mal.cloud.uploadFiles.data.exceptions.StorageFileNotFoundException
-import com.mal.cloud.uploadFiles.domain.entitiy.StorageEntity
+import com.mal.cloud.uploadFiles.domain.entitiy.LoadFileEntity
+import com.mal.cloud.uploadFiles.domain.entitiy.SaveFileEntity
 import com.mal.cloud.uploadFiles.domain.repository.StorageRepository
-import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import org.springframework.util.DigestUtils
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
 import java.net.MalformedURLException
@@ -23,66 +26,83 @@ import java.nio.file.StandardCopyOption
 
 @Service
 class StorageService(
-    private val userDbRepository: UserDbRepository,
-    private val locationData: LocationData,
-    private val mediaTypeComponent: MediaTypeComponent
+    private val authenticatedUserComponent: AuthenticatedUserComponent,
+    private val determineFileType: DetermineFileType,
+    private val fileInfoRepository: FileInfoRepository,
+    locationData: LocationData,
 ) : StorageRepository {
-    private val path = Paths.get(locationData.storageLocation)
+    private val location = Paths.get(locationData.storageLocation)
 
-    override fun storeFile(file: MultipartFile) {
-        val userName = SecurityContextHolder.getContext().authentication.principal as String
-        val user = userDbRepository.findUserByUsername(userName)!!
+    override fun storeFile(file: MultipartFile): SaveFileEntity {
+        val user = authenticatedUserComponent.getAuthenticatedUser()
 
-        try {
-            if (file.isEmpty) {
-                throw StorageException("Failed to store empty file.")
-            }
+        if (file.isEmpty) {
+            throw StorageException("Failed to store empty file.")
+        }
+        val destinationFile: Path = location.resolve(
+            Paths.get(
+                "${user.userId}/" +
+                        "${file.originalFilename}"
+            )
+        ).normalize().toAbsolutePath()
+        val hash = saveFile(file, destinationFile)
 
-            val destinationFile: Path = path.resolve(
-                Paths.get(
-                    "${user.userId}/" +
-                            "${file.hashCode()}${file.originalFilename}"
+        val fileInfo = fileInfoRepository.save(
+            FileInfo(
+                file.originalFilename ?: "",
+                hash,
+                user.userId!!,
+                determineFileType.getFileType(file.originalFilename!!)
+            )
+        )
+
+        return SaveFileEntity(fileInfo)
+    }
+
+    override fun loadFile(fileHash: String): LoadFileEntity {
+        val user = authenticatedUserComponent.getAuthenticatedUser()
+        val fileInfo = fileInfoRepository.findFileInfoByFileHash(fileHash).getOrNull(0)
+            ?: throw StorageFileNotFoundException(
+                "Could not found file: $fileHash"
+            )
+        if (user.userId != fileInfo.userId) {
+            throw AccessFileDeniedException("content not available for ${user.username}")
+        }
+
+        return try {
+            val path: Path = location.resolve("${user.userId}/${fileInfo.originFileName}").normalize()
+            val resource: Resource = UrlResource(path.toUri())
+            if (resource.exists() || resource.isReadable) {
+                LoadFileEntity(
+                    resource,
+                    determineFileType.getMediaType(fileInfo.originFileName)
                 )
-            ).normalize().toAbsolutePath()
-            Files.createDirectories(destinationFile)
+            } else {
+                throw StorageFileNotFoundException(
+                    "Could not read file: $fileHash"
+                )
+            }
+        } catch (e: MalformedURLException) {
+            throw StorageFileNotFoundException("Could not read file: $fileHash", e)
+        }
+    }
+
+    private fun saveFile(file: MultipartFile, destinationFile: Path): String {
+        try {
+            try {
+                Files.createDirectories(destinationFile)
+            } catch (e: IOException) {
+                throw FileExistentException()
+            }
             file.inputStream.use { inputStream ->
                 Files.copy(
                     inputStream, destinationFile,
                     StandardCopyOption.REPLACE_EXISTING
                 )
+                return DigestUtils.md5DigestAsHex(inputStream)
             }
-        } catch (e: IOException) {
-            throw StorageException("Failed to store file.", e)
-        }
-    }
-
-    override fun loadFile(userId: Long, filename: String): StorageEntity {
-        val user = when (val security = SecurityContextHolder.getContext().authentication.principal) {
-            is String -> {
-                userDbRepository.findUserByUsername(security)!!
-            }
-            is Usr -> {
-                security
-            }
-            else -> {
-                null
-            }
-        }
-        return try {
-            val path: Path = path.resolve("${user?.userId}/$filename").normalize()
-            val resource: Resource = UrlResource(path.toUri())
-            if (resource.exists() || resource.isReadable) {
-                StorageEntity(
-                    resource,
-                    mediaTypeComponent.getMediaTypeForFileName(filename)
-                )
-            } else {
-                throw StorageFileNotFoundException(
-                    "Could not read file: $filename"
-                )
-            }
-        } catch (e: MalformedURLException) {
-            throw StorageFileNotFoundException("Could not read file: $filename", e)
+        } catch (ex: IOException) {
+            throw StorageException("Failed to store file.", ex)
         }
     }
 }
