@@ -11,12 +11,11 @@ import com.mal.cloud.auth.domain.repository.AuthRepository
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.AuthenticationException
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
-class UserService(
+class AuthService(
     private val userDbRepository: UserDbRepository,
     private val authenticationManager: AuthenticationManager,
     private val passwordEncoder: PasswordEncoder,
