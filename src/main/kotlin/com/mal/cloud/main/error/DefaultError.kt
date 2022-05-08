@@ -1,4 +1,4 @@
-package com.mal.cloud.auth.presentation.exceptionHandler
+package com.mal.cloud.main.error
 
 data class DefaultError(
     val timestamp: String,

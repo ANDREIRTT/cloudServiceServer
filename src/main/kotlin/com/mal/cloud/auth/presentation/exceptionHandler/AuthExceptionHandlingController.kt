@@ -2,6 +2,7 @@ package com.mal.cloud.auth.presentation.exceptionHandler
 
 import com.mal.cloud.auth.data.exceptions.UserAlreadyExistException
 import com.mal.cloud.auth.data.exceptions.UserInvalidValuesException
+import com.mal.cloud.main.error.DefaultError
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
