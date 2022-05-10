@@ -99,7 +99,7 @@ class StorageService(
                     inputStream, destinationFile,
                     StandardCopyOption.REPLACE_EXISTING
                 )
-                return DigestUtils.md5DigestAsHex(inputStream)
+                return DigestUtils.md5DigestAsHex(file.bytes)
             }
         } catch (ex: IOException) {
             throw StorageException("Failed to store file.", ex)
