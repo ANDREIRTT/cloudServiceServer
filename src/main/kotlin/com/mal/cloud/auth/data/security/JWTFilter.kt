@@ -32,6 +32,7 @@ class JWTFilter(
             val jwt = authHeader.substring(BEARER.length)
             if (jwt.isBlank()) {
                 authResponseComponent.initResponse(response, RuntimeException("Invalid JWT Token in Bearer Header"))
+                return
             } else {
                 try {
                     val email: String = jwtUtil.validateTokenAndRetrieveSubject(jwt)
@@ -45,10 +46,10 @@ class JWTFilter(
                     }
                 } catch (exc: JWTVerificationException) {
                     authResponseComponent.initResponse(response, RuntimeException("Invalid JWT Token"))
+                    return
                 }
             }
-        } else {
-            filterChain.doFilter(request, response)
         }
+        filterChain.doFilter(request, response)
     }
 }
