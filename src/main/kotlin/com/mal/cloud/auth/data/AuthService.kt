@@ -25,6 +25,10 @@ class AuthService(
     override fun login(username: String, password: String): UserEntity {
         val userTable = userDbRepository.findUserByUsername(username) ?: throw UserInvalidValuesException()
 
+        if (userTable.password != passwordEncoder.encode(password)){
+            throw UserInvalidValuesException()
+        }
+
         val authInputToken = UsernamePasswordAuthenticationToken(username, password)
 
         try {
