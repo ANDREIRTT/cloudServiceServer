@@ -1,6 +1,6 @@
-package com.mal.cloud.auth.data.configuration
+package com.mal.cloud.auth.data.configuration.exceptionHandle
 
-import com.mal.cloud.auth.data.configuration.exception.AuthResponseComponent
+import com.mal.cloud.auth.data.configuration.exceptionHandle.AuthResponse
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse
 
 @Component
 class AuthExceptionHandler(
-    private val authResponseComponent: AuthResponseComponent
+    private val authResponse: AuthResponse
 ) : AuthenticationEntryPoint {
 
     override fun commence(
@@ -17,6 +17,6 @@ class AuthExceptionHandler(
         response: HttpServletResponse,
         authException: AuthenticationException
     ) {
-        authResponseComponent.initResponse(response, authException)
+        authResponse.initResponse(response, authException)
     }
 }

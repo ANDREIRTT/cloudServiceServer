@@ -1,4 +1,4 @@
-package com.mal.cloud.auth.data.configuration.exception
+package com.mal.cloud.auth.data.configuration.exceptionHandle
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mal.cloud.main.error.DefaultError
@@ -7,7 +7,7 @@ import java.util.*
 import javax.servlet.http.HttpServletResponse
 
 @Component
-class AuthResponseComponent {
+class AuthResponse {
     fun initResponse(response: HttpServletResponse, authException: RuntimeException) {
         response.addHeader("Content-Type", "application/json;charset=UTF-8")
         response.status = HttpServletResponse.SC_UNAUTHORIZED

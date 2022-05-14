@@ -1,7 +1,7 @@
 package com.mal.cloud.auth.data.security
 
 import com.auth0.jwt.exceptions.JWTVerificationException
-import com.mal.cloud.auth.data.configuration.exception.AuthResponseComponent
+import com.mal.cloud.auth.data.configuration.exceptionHandle.AuthResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
@@ -19,7 +19,7 @@ private const val HEADER = "Authorization"
 class JWTFilter(
     private val jwtUtil: JWTUtil,
     private val userDetailService: UserDetailService,
-    private val authResponseComponent: AuthResponseComponent
+    private val authResponse: AuthResponse
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -31,7 +31,7 @@ class JWTFilter(
         if (authHeader != null && authHeader.isNotBlank() && authHeader.startsWith(BEARER)) {
             val jwt = authHeader.substring(BEARER.length)
             if (jwt.isBlank()) {
-                authResponseComponent.initResponse(response, RuntimeException("Invalid JWT Token in Bearer Header"))
+                authResponse.initResponse(response, RuntimeException("Invalid JWT Token in Bearer Header"))
                 return
             } else {
                 try {
@@ -45,7 +45,7 @@ class JWTFilter(
                         SecurityContextHolder.getContext().authentication = authToken
                     }
                 } catch (exc: JWTVerificationException) {
-                    authResponseComponent.initResponse(response, RuntimeException("Invalid JWT Token"))
+                    authResponse.initResponse(response, RuntimeException("Invalid JWT Token"))
                     return
                 }
             }

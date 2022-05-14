@@ -1,6 +1,6 @@
 package com.mal.cloud.auth.data.configuration
 
-import com.mal.cloud.auth.data.configuration.exception.AuthResponseComponent
+import com.mal.cloud.auth.data.configuration.exceptionHandle.AuthExceptionHandler
 import com.mal.cloud.auth.data.security.JWTFilter
 import com.mal.cloud.auth.data.security.UserDetailService
 import com.mal.cloud.auth.data.table.UserRole
@@ -22,12 +22,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class WebSecurityConfig(
     private val userDetailService: UserDetailService,
     private val jwtFilter: JWTFilter,
-    private val authResponseComponent: AuthResponseComponent
+    private val authExceptionHandler: AuthExceptionHandler
 ) : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http
             .httpBasic().and()
-            .exceptionHandling().authenticationEntryPoint(authExceptionHandler()).and()
+            .exceptionHandling().authenticationEntryPoint(authExceptionHandler).and()
             .authorizeRequests()
             .antMatchers("/account/login", "/account/create", "/account/list", "/account/register").permitAll()
             .antMatchers("/h2-console").hasRole(UserRole.ROLE_ADMIN.name)
@@ -54,9 +54,5 @@ class WebSecurityConfig(
     @Bean
     override fun authenticationManagerBean(): AuthenticationManager {
         return super.authenticationManagerBean()
-    }
-
-    fun authExceptionHandler(): AuthExceptionHandler {
-        return AuthExceptionHandler(authResponseComponent)
     }
 }
