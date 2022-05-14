@@ -15,12 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.crypto.password.PasswordEncoder
 
 @SpringBootTest
 class AuthServiceTest {
 
     @Autowired
     private lateinit var userDbRepository: UserDbRepository
+
+    @Autowired
+    private lateinit var passwordEncoder: PasswordEncoder
 
     @MockBean
     private lateinit var authenticationManager: AuthenticationManager
@@ -33,7 +37,7 @@ class AuthServiceTest {
         userDbRepository.save(
             Usr(
                 username = "Bob",
-                password = "bobPass",
+                password = passwordEncoder.encode("bobPass"),
                 userRole = UserRole.ROLE_ADMIN
             )
         )
