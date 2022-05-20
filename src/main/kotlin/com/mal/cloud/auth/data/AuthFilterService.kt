@@ -1,38 +1,33 @@
-package com.mal.cloud.auth.data.security
+package com.mal.cloud.auth.data
 
 import com.auth0.jwt.exceptions.JWTVerificationException
-import com.mal.cloud.auth.data.configuration.exceptionHandle.AuthResponse
+import com.mal.cloud.auth.data.exceptions.JwtTokenException
+import com.mal.cloud.auth.data.security.JWTUtil
+import com.mal.cloud.auth.data.security.UserDetailService
+import com.mal.cloud.auth.domain.repository.AuthFilterRepository
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.stereotype.Component
-import org.springframework.web.filter.OncePerRequestFilter
-import javax.servlet.FilterChain
+import org.springframework.stereotype.Service
 import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 private const val BEARER = "Bearer "
 
 private const val HEADER = "Authorization"
 
-@Component
-class JWTFilter(
-    private val jwtUtil: JWTUtil,
+@Service
+class AuthFilterService(
     private val userDetailService: UserDetailService,
-    private val authResponse: AuthResponse
-) : OncePerRequestFilter() {
-    override fun doFilterInternal(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        filterChain: FilterChain
-    ) {
+    private val jwtUtil: JWTUtil,
+) : AuthFilterRepository {
+
+    override fun filter(request: HttpServletRequest) {
         val authHeader = request.getHeader(HEADER)
 
         if (authHeader != null && authHeader.isNotBlank() && authHeader.startsWith(BEARER)) {
             val jwt = authHeader.substring(BEARER.length)
             if (jwt.isBlank()) {
-                authResponse.initResponse(response, RuntimeException("Invalid JWT Token in Bearer Header"))
-                return
+                throw JwtTokenException("Invalid JWT Token in Bearer Header")
             } else {
                 try {
                     val email: String = jwtUtil.validateTokenAndRetrieveSubject(jwt)
@@ -45,11 +40,9 @@ class JWTFilter(
                         SecurityContextHolder.getContext().authentication = authToken
                     }
                 } catch (exc: JWTVerificationException) {
-                    authResponse.initResponse(response, RuntimeException("Invalid JWT Token"))
-                    return
+                    throw JwtTokenException("Invalid JWT Token")
                 }
             }
         }
-        filterChain.doFilter(request, response)
     }
 }

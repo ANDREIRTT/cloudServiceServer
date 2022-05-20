@@ -1,4 +1,4 @@
-package com.mal.cloud.auth.data.configuration.exceptionHandle
+package com.mal.cloud.auth.presentation.configuration.exceptionHandle
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mal.cloud.main.error.DefaultError

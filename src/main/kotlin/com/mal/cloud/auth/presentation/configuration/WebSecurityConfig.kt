@@ -1,7 +1,7 @@
-package com.mal.cloud.auth.data.configuration
+package com.mal.cloud.auth.presentation.configuration
 
-import com.mal.cloud.auth.data.configuration.exceptionHandle.AuthExceptionHandler
-import com.mal.cloud.auth.data.security.JWTFilter
+import com.mal.cloud.auth.presentation.configuration.exceptionHandle.AuthExceptionHandler
+import com.mal.cloud.auth.presentation.JWTFilter
 import com.mal.cloud.auth.data.security.UserDetailService
 import com.mal.cloud.auth.data.table.UserRole
 import org.springframework.boot.context.properties.EnableConfigurationProperties

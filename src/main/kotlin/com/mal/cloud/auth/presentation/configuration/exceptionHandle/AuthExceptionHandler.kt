@@ -1,6 +1,6 @@
-package com.mal.cloud.auth.data.configuration.exceptionHandle
+package com.mal.cloud.auth.presentation.configuration.exceptionHandle
 
-import com.mal.cloud.auth.data.configuration.exceptionHandle.AuthResponse
+import com.mal.cloud.auth.presentation.configuration.exceptionHandle.AuthResponse
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
