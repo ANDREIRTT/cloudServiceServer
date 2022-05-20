@@ -70,6 +70,8 @@ fileType
 
 Path-параметры
 
+| Path-param | Path value |
+| ------ | ------ |
 | fileHash | хэш файла |
 
 Ответ от сервера
