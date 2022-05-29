@@ -46,6 +46,10 @@ class AuthService(
     override fun register(username: String, password: String, userRole: UserRole): UserEntity {
         val userDetails = userDbRepository.findUserByUsername(username)
 
+        if (username.isBlank() || password.isBlank()) {
+            throw UserInvalidValuesException("username or password is blank")
+        }
+
         if (userDetails == null) {
             return UserEntity(
                 jwtUtil.generateToken(username),

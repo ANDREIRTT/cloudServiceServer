@@ -3,10 +3,8 @@ package com.mal.cloud.authFilter
 import com.mal.cloud.auth.data.AuthFilterService
 import com.mal.cloud.auth.data.AuthService
 import com.mal.cloud.auth.data.dbRepository.UserDbRepository
-import com.mal.cloud.auth.data.exceptions.JwtTokenException
 import com.mal.cloud.auth.data.table.UserRole
 import com.mal.cloud.auth.data.table.Usr
-import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -58,19 +56,14 @@ class AuthFilterServiceTest {
     fun testBlankAuthBearer() {
         val mockedRequest = MockHttpServletRequest()
         mockedRequest.addHeader("Authorization", "Bearer   ")
-
-        Assertions.assertThatThrownBy {
-            authFilterService.filter(mockedRequest)
-        }.isInstanceOf(JwtTokenException::class.java)
+        authFilterService.filter(mockedRequest)
     }
 
     @Test
     fun testInvalidAuthBearer() {
         val mockedRequest = MockHttpServletRequest()
         mockedRequest.addHeader("Authorization", "Bearer gyusfd")
-        Assertions.assertThatThrownBy {
-            authFilterService.filter(mockedRequest)
-        }.isInstanceOf(JwtTokenException::class.java)
+        authFilterService.filter(mockedRequest)
     }
 
     @Test

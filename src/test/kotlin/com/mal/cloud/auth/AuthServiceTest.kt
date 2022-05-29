@@ -95,6 +95,17 @@ class AuthServiceTest {
         }.isInstanceOf(UserInvalidValuesException::class.java)
     }
 
+    @Test
+    fun testBlankRegisterUserParams() {
+        Assertions.assertThatThrownBy {
+            authService.register(
+                username = "",
+                password = "",
+                UserRole.ROLE_USER
+            )
+        }.isInstanceOf(UserInvalidValuesException::class.java)
+    }
+
     fun assertUserEntity(userEntity: UserEntity) {
         Assertions.assertThat(userEntity.token).isNotNull
         Assertions.assertThat(userEntity.usr).hasNoNullFieldsOrProperties()

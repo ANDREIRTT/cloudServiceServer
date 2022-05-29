@@ -16,8 +16,7 @@ class AuthUseCase(
 ) {
     fun register(username: String, password: String, userRole: UserRole): ResponseEntity<Any> {
         return try {
-            ResponseEntity.ok()
-                .body(authRepository.register(username, password, userRole).toAuthData())
+            ResponseEntity.ok().body(authRepository.register(username, password, userRole).toAuthData())
         } catch (e: UserAlreadyExistException) {
             val status = HttpStatus.CONFLICT
             ResponseEntity<Any>(
@@ -28,13 +27,22 @@ class AuthUseCase(
                     message = "Такой пользователь уже существует"
                 ), status
             )
+        } catch (e: UserInvalidValuesException) {
+            val status = HttpStatus.UNAUTHORIZED
+            ResponseEntity<Any>(
+                DefaultError(
+                    timestamp = Date().toInstant().toString(),
+                    status = status.value(),
+                    error = e.message ?: "null",
+                    message = "Не действительный логин или пароль"
+                ), status
+            )
         }
     }
 
     fun login(username: String, password: String): ResponseEntity<Any> {
         return try {
-            ResponseEntity.ok()
-                .body(authRepository.login(username, password).toAuthData())
+            ResponseEntity.ok().body(authRepository.login(username, password).toAuthData())
         } catch (e: UserInvalidValuesException) {
             val status = HttpStatus.UNAUTHORIZED
             ResponseEntity<Any>(
