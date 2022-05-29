@@ -26,9 +26,7 @@ class AuthFilterService(
 
         if (authHeader != null && authHeader.isNotBlank() && authHeader.startsWith(BEARER)) {
             val jwt = authHeader.substring(BEARER.length)
-            if (jwt.isBlank()) {
-                throw JwtTokenException("Invalid JWT Token in Bearer Header")
-            } else {
+            if (jwt.isNotBlank()) {
                 try {
                     val email: String = jwtUtil.validateTokenAndRetrieveSubject(jwt)
                     val userDetails: UserDetails = userDetailService.loadUserByUsername(email)
@@ -39,8 +37,7 @@ class AuthFilterService(
                     if (SecurityContextHolder.getContext().authentication == null) {
                         SecurityContextHolder.getContext().authentication = authToken
                     }
-                } catch (exc: JWTVerificationException) {
-                    throw JwtTokenException("Invalid JWT Token")
+                } catch (_: JWTVerificationException) {
                 }
             }
         }
