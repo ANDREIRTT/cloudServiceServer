@@ -6,7 +6,7 @@ import com.mal.cloud.uploadFiles.domain.dto.StorageFile
 data class SaveFileEntity(
     val fileInfo: FileInfo
 ) {
-    fun toStoregeFile(): StorageFile {
+    fun toStorageFile(): StorageFile {
         return StorageFile(
             fileInfo.fileHash,
             fileInfo.fileType,

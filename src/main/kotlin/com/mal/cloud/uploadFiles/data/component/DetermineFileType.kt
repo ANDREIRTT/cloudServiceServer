@@ -20,16 +20,16 @@ class DetermineFileType(private val servletContext: ServletContext) {
     fun getFileType(fileName: String): FileType {
         val mimeType = servletContext.getMimeType(fileName)
         return when {
-            mimeType.startsWith("image/") -> {
+            mimeType?.startsWith("image/") == true -> {
                 FileType.IMAGE
             }
-            mimeType.startsWith("video/") -> {
+            mimeType?.startsWith("video/") == true -> {
                 FileType.VIDEO
             }
-            mimeType.startsWith("text/") -> {
+            mimeType?.startsWith("text/") == true -> {
                 FileType.TEXT
             }
-            mimeType.startsWith("audio/") -> {
+            mimeType?.startsWith("audio/") == true -> {
                 FileType.AUDIO
             }
             else -> {
