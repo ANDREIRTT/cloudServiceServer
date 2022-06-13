@@ -1,11 +1,9 @@
 package com.mal.cloud.uploadFiles.domain.useCase
 
 import com.mal.cloud.main.error.DefaultError
-import com.mal.cloud.uploadFiles.data.StorageService
-import com.mal.cloud.uploadFiles.data.exceptions.AccessFileDeniedException
 import com.mal.cloud.uploadFiles.data.exceptions.FileExistentException
 import com.mal.cloud.uploadFiles.data.exceptions.StorageException
-import com.mal.cloud.uploadFiles.data.exceptions.StorageFileNotFoundException
+import com.mal.cloud.uploadFiles.domain.repository.StorageRepository
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
@@ -14,7 +12,7 @@ import java.util.*
 
 @Component
 class StorageUseCase(
-    private val storageService: StorageService
+    private val storageService: StorageRepository
 ) {
     fun storeFile(file: MultipartFile): ResponseEntity<Any> {
         return try {
@@ -42,36 +40,22 @@ class StorageUseCase(
         }
     }
 
-    fun loadFile(fileName: String): ResponseEntity<Any> {
+    fun deleteFile(fileHash: String): ResponseEntity<Any> {
         return try {
-            val storageEntity = storageService.loadFile(fileName)
-
-            return ResponseEntity.ok()
-                .header("content-disposition", "inline; filename=\"" + storageEntity.resource.filename + "\"")
-                .contentLength(storageEntity.resource.contentLength())
-                .contentType(storageEntity.mediaType)
-                .body(storageEntity.resource)
-        } catch (e: StorageFileNotFoundException) {
-            val status = HttpStatus.NOT_FOUND
+            storageService.deleteFile(fileHash)
             ResponseEntity<Any>(
-                DefaultError(
-                    timestamp = Date().toInstant().toString(),
-                    status = status.value(),
-                    error = e.message ?: "null",
-                    message = "Файл не найден"
-                ), status
+                HttpStatus.OK
             )
-        } catch (e: AccessFileDeniedException) {
-            val status = HttpStatus.FORBIDDEN
+        } catch (e: Exception) {
+            val status = HttpStatus.BAD_REQUEST
             ResponseEntity<Any>(
                 DefaultError(
                     timestamp = Date().toInstant().toString(),
                     status = status.value(),
                     error = e.message ?: "null",
-                    message = "Ошибка доступа"
+                    message = "Ошибка удаления"
                 ), status
             )
         }
-
     }
 }

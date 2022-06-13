@@ -1,7 +1,7 @@
 package com.mal.cloud.userFiles.domain.entity
 
 import com.mal.cloud.uploadFiles.data.database.table.FileInfo
-import com.mal.cloud.uploadFiles.domain.entitiy.SaveFileEntity
+import com.mal.cloud.uploadFiles.domain.entitiy.FileEntity
 import com.mal.cloud.userFiles.domain.dto.UserFile
 
 data class UserFilesEntity(
@@ -16,7 +16,7 @@ data class UserFilesEntity(
             size,
             isLastPage,
             userFiles.map {
-                SaveFileEntity(it).toStorageFile()
+                FileEntity(it).toStorageFile()
             }
         )
     }

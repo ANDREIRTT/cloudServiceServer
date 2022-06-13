@@ -1,4 +1,4 @@
-package com.mal.cloud.uploadFiles.data.exceptions
+package com.mal.cloud.userFiles.exceptions
 
 class StorageFileNotFoundException(
     message: String? = null,

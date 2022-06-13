@@ -1,5 +1,6 @@
-package com.mal.cloud.uploadFiles.data.configuration
+package com.mal.cloud.uploadFiles.presentation
 
+import com.mal.cloud.uploadFiles.data.configuration.LocationData
 import org.springframework.boot.web.servlet.MultipartConfigFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
